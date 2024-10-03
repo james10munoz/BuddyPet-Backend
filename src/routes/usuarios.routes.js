@@ -7,7 +7,7 @@ import { uploadImage } from "../config/imagenes.controller.js";
 const usuarioRoutes = Router();
 
 usuarioRoutes.get("/listar", validarToken, listarUsuarios);
-usuarioRoutes.get('/perfil/:id_usuario', validarToken, upload.single('img'), uploadImage, Perfil);
+usuarioRoutes.get('/perfil/:id_usuario', /*validarToken,*/ upload.single('img'), uploadImage, Perfil);
 usuarioRoutes.post('/registrar', upload.single('img'), uploadImage, registrarUsuario);
 usuarioRoutes.get('/conteo/rol', obtenerConteoPorEstado);
 usuarioRoutes.put('/actualizar/:id_usuario', validarToken, upload.single('img'), uploadImage,  actualizarUsuario);

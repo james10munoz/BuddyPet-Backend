@@ -33,7 +33,7 @@ const generatePDF = (data) => {
             const margin = 50;
             const imageSize = 60;
             const textFontSize = 10;
-            const imagePath = path.resolve('uploads/img-1723413097559-796545287.png');
+            const imagePath = path.resolve('uploads/buddypet.png');
 
             // Función para dibujar el margen
             const drawMargin = () => {
@@ -62,7 +62,7 @@ const generatePDF = (data) => {
                         .fontSize(textFontSize)
                         .fillColor('black')
                         .font('Helvetica')
-                        .text('Purrfect Match', 
+                        .text('Buddy Pet', 
                             margin + 6 + 4,  // Ajusta la posición horizontal del texto
                             margin + imageHeight + 10 - 5); // Ajusta la posición vertical del texto
                 } else {
@@ -148,7 +148,7 @@ const drawFooter = () => {
         .fontSize(10)
         .fillColor('black')
         .font('Helvetica')
-        .text('Purrfect Match', fixedXPosition, fixedYPosition);
+        .text('Buddy Pet', fixedXPosition, fixedYPosition);
 };
 
 // Llama a drawMargin, drawImageAndText, y drawFooter en la primera página

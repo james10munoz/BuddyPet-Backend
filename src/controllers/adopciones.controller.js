@@ -72,7 +72,7 @@ export const listarMascotasAceptadas = async (req, res) => {
         r.nombre_raza AS raza,
         d.nombre_departamento AS departamento,
         mu.nombre_municipio AS municipio,
-        a.fecha_adopcion_aceptada,
+        a.fecha_adopcion,
         GROUP_CONCAT(i.ruta_imagen) AS imagenes
       FROM adopciones a
       INNER JOIN mascotas m ON a.fk_id_mascota = m.id_mascota
@@ -224,13 +224,6 @@ export const iniciarAdopcion = async (req, res) => {
 // Controlador para administrar la adopción (aceptar o denegar)
 export const administrarAdopcion = async (req, res) => {
   try {
-    // Validar los datos de entrada
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    // Obtener parámetros y cuerpo de la solicitud
     const { id_adopcion } = req.params;
     const { accion } = req.body;
 
@@ -244,15 +237,17 @@ export const administrarAdopcion = async (req, res) => {
     }
 
     const adopcion = adopcionResult[0];
-    const [mascotaResult] = await pool.query("SELECT estado_anterior FROM adopciones WHERE id_adopcion = ?", [id_adopcion]);
-    if (mascotaResult.length === 0) {
+
+    // Obtener el estado anterior de la mascota desde la tabla `adopciones` (se supone que fue almacenado al iniciar la adopción)
+    const [estadoAnteriorResult] = await pool.query("SELECT estado_anterior FROM adopciones WHERE id_adopcion = ?", [id_adopcion]);
+    if (estadoAnteriorResult.length === 0) {
       return res.status(404).json({
         status: 404,
-        message: 'No se encontró el estado previo de la mascota'
+        message: 'No se encontró el estado anterior de la mascota'
       });
     }
 
-    const estadoAnterior = mascotaResult[0].estado_anterior;
+    const estadoAnterior = estadoAnteriorResult[0].estado_anterior; // Obtener el estado anterior de la adopción
     let nuevoEstadoMascota;
     let fechaAdopcionAceptada = null;
 
@@ -261,12 +256,18 @@ export const administrarAdopcion = async (req, res) => {
       nuevoEstadoMascota = 'Adoptado';
       fechaAdopcionAceptada = new Date(); // Establecer la fecha de aceptación
 
+      // Actualizar la solicitud de adopción con el estado "aceptada"
       await pool.query(
-        "UPDATE adopciones SET estado = 'aceptada', fecha_adopcion_aceptada = ? WHERE id_adopcion = ?", 
+        "UPDATE adopciones SET estado = 'aceptada', fecha_adopcion = ? WHERE id_adopcion = ?", 
         [fechaAdopcionAceptada, id_adopcion]
       );
     } else if (accion === 'denegar') {
       nuevoEstadoMascota = estadoAnterior; // Restaurar el estado previo de la mascota
+
+      // Actualizar el estado de la mascota primero
+      await pool.query("UPDATE mascotas SET estado = ? WHERE id_mascota = ?", [nuevoEstadoMascota, adopcion.fk_id_mascota]);
+
+      // Luego eliminar la solicitud de adopción
       await pool.query("DELETE FROM adopciones WHERE id_adopcion = ?", [id_adopcion]);
     } else {
       return res.status(400).json({
@@ -275,17 +276,25 @@ export const administrarAdopcion = async (req, res) => {
       });
     }
 
-    // Actualizar el estado de la mascota
-    const [updateResult] = await pool.query("UPDATE mascotas SET estado = ? WHERE id_mascota = ?", [nuevoEstadoMascota, adopcion.fk_id_mascota]);
-    if (updateResult.affectedRows > 0) {
-      res.status(200).json({
-        status: 200,
-        message: `La adopción ha sido ${accion === 'aceptar' ? 'aceptada' : 'denegada'}`
-      });
+    // Actualizar el estado de la mascota si se acepta la adopción
+    if (accion === 'aceptar') {
+      const [updateResult] = await pool.query("UPDATE mascotas SET estado = ? WHERE id_mascota = ?", [nuevoEstadoMascota, adopcion.fk_id_mascota]);
+
+      if (updateResult.affectedRows > 0) {
+        return res.status(200).json({
+          status: 200,
+          message: `La adopción ha sido aceptada y el estado de la mascota se ha actualizado a ${nuevoEstadoMascota}`
+        });
+      } else {
+        return res.status(404).json({
+          status: 404,
+          message: 'No se pudo actualizar el estado de la mascota'
+        });
+      }
     } else {
-      res.status(404).json({
-        status: 404,
-        message: 'No se pudo actualizar el estado de la mascota'
+      return res.status(200).json({
+        status: 200,
+        message: 'La adopción ha sido denegada y la mascota ha vuelto a su estado anterior'
       });
     }
   } catch (error) {
@@ -295,4 +304,3 @@ export const administrarAdopcion = async (req, res) => {
     });
   }
 };
-

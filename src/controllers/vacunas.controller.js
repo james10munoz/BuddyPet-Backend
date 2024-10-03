@@ -26,23 +26,24 @@ export const listarVacunas = async (req, res) => {
 export const listarVacunasAsociadaAMascota = async (req, res) => {
   const { id_mascota } = req.params;
   try {
-    const [result] = await pool.query("SELECT * FROM vacunas", [id_mascota]);
+    // Ajusta la consulta SQL para que filtre por el id_mascota
+    const [result] = await pool.query("SELECT * FROM vacunas WHERE fk_id_mascota = ?", [id_mascota]);
     if (result.length > 0) {
       res.status(200).json(result);
     } else {
-      res.status(403).json({
-        status: 403,
-        message: "No hay vacunas para listar"
-      })
+      res.status(404).json({
+        status: 404,
+        message: "No hay vacunas asociadas a esta mascota",
+      });
     }
-    
   } catch (error) {
     res.status(500).json({
       status: 500,
-      message: "Error en el servidor " + error.message,
+      message: "Error en el servidor: " + error.message,
     });
   }
 };
+
 
 // Registrar Vacuna
 export const registrarVacuna = async (req, res) => {
