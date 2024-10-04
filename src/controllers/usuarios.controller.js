@@ -1,7 +1,7 @@
 import { pool } from "../database/conexion.js";
 import fs from "fs";
 import path from "path";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 // import { validationResult } from "express-validator";
 
 // listar usuarios
