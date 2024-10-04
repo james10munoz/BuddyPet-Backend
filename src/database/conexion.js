@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 /* dotenv.config({ path: "./src/env/.env" }); */
 dotenv.config({ path: "./src/env/.env" });
 export const pool = createPool({
-	host: process.env.DB_HOST,
-	user: process.env.DB_USER,
-	password: process.env.DB_PASSWORD,
-	port: process.env.DB_PORT,
-	database: process.env.DB_DATABASE,
+	host: 'b9iytc2y2enbn9s1mwkk-mysql.services.clever-cloud.com',
+	user: 'u7jddxmumycrirzd',
+	password: 'd5qgOmbto92MKjzI1LBp',
+	port: 3306,
+	database: 'b9iytc2y2enbn9s1mwkk',
 });
