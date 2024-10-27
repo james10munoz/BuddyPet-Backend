@@ -5,7 +5,7 @@ import { validateActualizarDepartamento, validateCrearDepartamento } from "../va
 
 const DepartamentoRoutes = Router();
 
-DepartamentoRoutes.get("/listar", validarToken, listarDepartamentos);
+DepartamentoRoutes.get("/listar", listarDepartamentos);
 DepartamentoRoutes.post("/registrar", validarToken, validateCrearDepartamento, registrarDepartamento);
 DepartamentoRoutes.put("/actualizar/:id_departamento", validarToken, validateActualizarDepartamento, actualizarDepartamento);
 DepartamentoRoutes.delete("/eliminar/:id_departamento", validarToken, eliminarDepartamento);

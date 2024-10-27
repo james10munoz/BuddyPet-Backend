@@ -13,6 +13,7 @@ export const validateRegistroUsuario = [
 	
 
 	check(
+		
 		"nombres",
 		"El nombre es obligatorio y debe contener solo letras, máximo 50 caracteres"
 	)

@@ -5,7 +5,7 @@ import { validateActualizarMunicipio, validateCrearMunicipio } from "../validati
 
 const MunicipioRoutes = Router();
 
-MunicipioRoutes.get("/listar", validarToken, listarMunicipios);
+MunicipioRoutes.get("/listar/:id_departamento",  listarMunicipios);
 MunicipioRoutes.post("/registrar", validarToken, validateCrearMunicipio, registrarMunicipio);
 MunicipioRoutes.put("/actualizar/:id_municipio", validateActualizarMunicipio, validarToken, actualizarMunicipio);
 MunicipioRoutes.delete("/eliminar/:id_municipio", validarToken, eliminarMunicipio);

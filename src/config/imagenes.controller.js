@@ -6,6 +6,7 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5 MB en bytes
 
 // Middleware para manejar la subida de imágenes
 export const uploadImage = (req, res, next) => {
+  console.log("Archivos recibidos:", req.files); // Verifica si los archivos se están recibiendo
   if (req.files && req.files.length > 0) {
     req.files.forEach((file) => {
       const fileType = file.mimetype;
@@ -39,6 +40,7 @@ export const uploadImage = (req, res, next) => {
   }
   next();
 };
+
 
 // Middleware para eliminar la imagen anterior (si existe)
 export const deleteImage = (req, res, next) => {

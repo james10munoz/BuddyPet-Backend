@@ -3,34 +3,50 @@ import { validationResult } from "express-validator";
 
 // Listar Municipios
 export const listarMunicipios = async (req, res) => {
-	try {
-		const [result] = await pool.query(`
-			SELECT 
-				m.id_municipio, 
-				m.nombre_municipio, 
-				m.codigo_dane, 
-				m.fk_id_departamento, 
-				d.nombre_departamento 
-			FROM 
-				municipios m
-			INNER JOIN 
-				departamentos d ON m.fk_id_departamento = d.id_departamento
-		`);
-		if (result.length > 0) {
-			res.status(200).json(result);
-		} else {
-			res.status(403).json({
-				status: 403,
-				message: "No hay municipios para listar"
-			})
-		}
-	} catch (error) {
-		res.status(500).json({
-			status: 500,
-			message: "Error en el servidor " + error.message,
-		});
-	}
+    try {
+        const { id_departamento } = req.params; // Obtener id_departamento de los parámetros
+
+        // Verificar si se proporciona el id_departamento
+        if (!id_departamento) {
+            return res.status(400).json({
+                status: 400,
+                message: "El id_departamento es requerido."
+            });
+        }
+
+        // Consulta para filtrar municipios por el departamento proporcionado
+        const [result] = await pool.query(`
+            SELECT 
+                m.id_municipio, 
+                m.nombre_municipio, 
+                m.codigo_dane, 
+                m.fk_id_departamento, 
+                d.nombre_departamento 
+            FROM 
+                municipios m
+            INNER JOIN 
+                departamentos d ON m.fk_id_departamento = d.id_departamento
+            WHERE 
+                m.fk_id_departamento = ?
+        `, [id_departamento]);
+
+        // Verificar si hay resultados
+        if (result.length > 0) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: "No hay municipios para listar en este departamento."
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error en el servidor " + error.message,
+        });
+    }
 };
+
 
 
 // Registrar Municipio

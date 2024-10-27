@@ -108,7 +108,7 @@ export const registrarUsuario = async (req, res) => {
 	}
 };
 
-// Actualizar Usuario
+// Actualizar Usuario    La ruta es actualizar<perfil
 export const actualizarUsuario = async (req, res) => {
 	try {
 		const { id_usuario } = req.params;

@@ -290,10 +290,40 @@ export const eliminarMascota = async (req, res) => {
 export const buscarMascota = async (req, res) => {
 	try {
 		const { id_mascota } = req.params;
+		// Consulta SQL para obtener detalles de la mascota junto con sus imágenes
 		const [result] = await pool.query(
-			"SELECT * FROM Mascotas WHERE id_mascota=?",
+			`
+			SELECT 
+				m.id_mascota,
+				m.nombre_mascota,
+				m.fecha_nacimiento,
+				m.estado,
+				m.descripcion,
+				m.esterilizado,
+				m.tamano,
+				m.peso,
+				m.fk_id_categoria,
+				c.nombre_categoria AS categoria,
+				m.fk_id_raza,
+				r.nombre_raza AS raza,
+				m.fk_id_departamento,
+				d.nombre_departamento AS departamento,
+				m.fk_id_municipio,
+				mu.nombre_municipio AS municipio,
+				m.sexo,
+				GROUP_CONCAT(i.ruta_imagen) AS imagenes
+			FROM mascotas m
+			LEFT JOIN imagenes i ON m.id_mascota = i.fk_id_mascota
+			LEFT JOIN categorias c ON m.fk_id_categoria = c.id_categoria
+			LEFT JOIN razas r ON m.fk_id_raza = r.id_raza
+			LEFT JOIN departamentos d ON m.fk_id_departamento = d.id_departamento
+			LEFT JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
+			WHERE m.id_mascota = ?
+			GROUP BY m.id_mascota;
+			`,
 			[id_mascota]
 		);
+
 		if (result.length > 0) {
 			res.status(200).json({
 				status: 200,
@@ -309,10 +339,11 @@ export const buscarMascota = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			status: 500,
-			message: "Error en el servidor " + error.message,
+			message: "Error en el servidor: " + error.message,
 		});
 	}
 };
+
 
 
 //controlador para la generar la ficha tecnica de la mascota
