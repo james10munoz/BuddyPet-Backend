@@ -151,113 +151,113 @@ export const obtenerConteoPorEstado = async (req, res) => {
 
 // Actualizar Mascota por ID
 export const actualizarMascota = async (req, res) => {
-	try {
-		const { id_mascota } = req.params;
-		const {
-			nombre_mascota,
-			fecha_nacimiento,
-			estado,
-			descripcion,
-			esterilizado,
-			tamano,
-			peso,
-			fk_id_categoria,
-			fk_id_raza,
-			fk_id_departamento,
-			fk_id_municipio,
-			sexo,
-		} = req.body;
+    try {
+        const { id_mascota } = req.params;
+        const {
+            nombre_mascota,
+            fecha_nacimiento,
+            estado,
+            descripcion,
+            esterilizado,
+            tamano,
+            peso,
+            fk_id_categoria,
+            fk_id_raza,
+            fk_id_departamento,
+            fk_id_municipio,
+            sexo,
+        } = req.body;
 
-		const nuevasFotos = req.files || []; // Nuevas imágenes subidas
+        const nuevasFotos = req.files || []; // Nuevas imágenes subidas
 
-		// Actualizar la información de la mascota
-		const [result] = await pool.query(
-			`UPDATE mascotas 
-			 SET nombre_mascota=?, fecha_nacimiento=?, estado=?, descripcion=?, 
-			 esterilizado=?, tamano=?, peso=?, fk_id_categoria=?, fk_id_raza=?, 
-			 fk_id_departamento=?, fk_id_municipio=?, sexo=? 
-			 WHERE id_mascota=?`,
-			[
-				nombre_mascota,
-				fecha_nacimiento,
-				estado,
-				descripcion,
-				esterilizado,
-				tamano,
-				peso,
-				fk_id_categoria,
-				fk_id_raza,
-				fk_id_departamento,
-				fk_id_municipio,
-				sexo,
-				id_mascota,
-			]
-		);
+        // Actualizar la información de la mascota
+        const [result] = await pool.query(
+            `UPDATE mascotas 
+             SET nombre_mascota=?, fecha_nacimiento=?, estado=?, descripcion=?, 
+             esterilizado=?, tamano=?, peso=?, fk_id_categoria=?, fk_id_raza=?, 
+             fk_id_departamento=?, fk_id_municipio=?, sexo=? 
+             WHERE id_mascota=?`,
+            [
+                nombre_mascota,
+                fecha_nacimiento,
+                estado,
+                descripcion,
+                esterilizado,
+                tamano,
+                peso,
+                fk_id_categoria,
+                fk_id_raza,
+                fk_id_departamento,
+                fk_id_municipio,
+                sexo,
+                id_mascota,
+            ]
+        );
 
-		if (result.affectedRows > 0) {
-			// Si hay nuevas fotos, actualizarlas en la base de datos
-			if (Array.isArray(nuevasFotos) && nuevasFotos.length > 0) {
-				// Obtener las fotos actuales de la base de datos
-				const [currentImages] = await pool.query(
-					"SELECT ruta_imagen FROM imagenes WHERE fk_id_mascota=?",
-					[id_mascota]
-				);
+        if (result.affectedRows > 0) {
+            // Obtener las fotos actuales de la base de datos
+            const [currentImages] = await pool.query(
+                "SELECT ruta_imagen FROM imagenes WHERE fk_id_mascota=?",
+                [id_mascota]
+            );
 
-				// Eliminar las fotos actuales del servidor
-				currentImages.forEach((img) => {
-					fs.unlink(path.join("uploads", img.ruta_imagen), (err) => {
-						if (err)
-							console.error("No se pudo eliminar la imagen anterior:", err);
-					});
-				});
+            // Eliminar las fotos seleccionadas para reemplazo
+            if (Array.isArray(nuevasFotos) && nuevasFotos.length > 0) {
+                // Eliminar las imágenes anteriores solo si se ha subido alguna nueva
+                currentImages.forEach((img) => {
+                    fs.unlink(path.join("uploads", img.ruta_imagen), (err) => {
+                        if (err) {
+                            console.error("No se pudo eliminar la imagen anterior:", err);
+                        }
+                    });
+                });
 
-				// Eliminar las fotos actuales de la base de datos
-				await pool.query("DELETE FROM imagenes WHERE fk_id_mascota=?", [
-					id_mascota,
-				]);
+                // Eliminar las fotos actuales de la base de datos
+                await pool.query("DELETE FROM imagenes WHERE fk_id_mascota=?", [id_mascota]);
 
-				// Insertar las nuevas fotos en la base de datos
-				const imageQueries = nuevasFotos.map((file) =>
-					pool.query(
-						"INSERT INTO imagenes (fk_id_mascota, ruta_imagen) VALUES (?, ?)",
-						[id_mascota, file.filename]
-					)
-				);
-				await Promise.all(imageQueries);
-			}
+                // Insertar las nuevas fotos en la base de datos
+                const imageQueries = nuevasFotos.map((file) =>
+                    pool.query(
+                        "INSERT INTO imagenes (fk_id_mascota, ruta_imagen) VALUES (?, ?)",
+                        [id_mascota, file.filename]
+                    )
+                );
+                await Promise.all(imageQueries);
+            }
 
-			res.status(200).json({
-				status: 200,
-				message: "Mascota actualizada exitosamente",
-				data: {
-					id_mascota,
-					nombre_mascota,
-					fecha_nacimiento,
-					estado,
-					descripcion,
-					esterilizado,
-					tamano,
-					peso,
-					fk_id_categoria,
-					fk_id_raza,
-					fk_id_departamento,
-					fk_id_municipio,
-					sexo,
-				},
-			});
-		} else {
-			res.status(403).json({
-				status: 403,
-				message: "No se pudo actualizar la mascota",
-			});
-		}
-	} catch (error) {
-		res.status(500).json({
-			status: 500,
-			message: "Error en el servidor: " + error.message,
-		});
-	}
+            res.status(200).json({
+                status: 200,
+                message: "Mascota actualizada exitosamente",
+                data: {
+                    id_mascota,
+                    nombre_mascota,
+                    fecha_nacimiento,
+                    estado,
+                    descripcion,
+                    esterilizado,
+                    tamano,
+                    peso,
+                    fk_id_categoria,
+                    fk_id_raza,
+                    fk_id_departamento,
+                    fk_id_municipio,
+                    sexo,
+                },
+            });
+        } else {
+            res.status(403).json({
+                status: 403,
+                message: "No se pudo actualizar la mascota",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error en el servidor: " + error.message,
+        });
+    }
 };
+
 
 // Eliminar Mascota por ID
 export const eliminarMascota = async (req, res) => {
