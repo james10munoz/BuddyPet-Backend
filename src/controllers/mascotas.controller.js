@@ -58,7 +58,7 @@ export const registrarMascota = async (req, res) => {
 		const {
 			nombre_mascota,
 			fecha_nacimiento,
-			estado = "En Adopcion", // Valor por defecto
+			estado = "En Adopcion",
 			descripcion,
 			esterilizado,
 			tamano,
@@ -70,14 +70,17 @@ export const registrarMascota = async (req, res) => {
 			sexo,
 		} = req.body;
 
-		const files = req.files || []; // Si no hay archivos, usar un array vacío
+		const files = req.files || [];
+
+		// Convertir la fecha de nacimiento al formato YYYY-MM-DD
+		const fechaNacimientoFormateada = new Date(fecha_nacimiento).toISOString().split('T')[0];
 
 		// Insertar la nueva mascota
 		const [result] = await pool.query(
 			"INSERT INTO mascotas (nombre_mascota, fecha_nacimiento, estado, descripcion, esterilizado, tamano, peso, fk_id_categoria, fk_id_raza, fk_id_departamento, fk_id_municipio, sexo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 			[
 				nombre_mascota,
-				fecha_nacimiento,
+				fechaNacimientoFormateada,
 				estado,
 				descripcion,
 				esterilizado,
@@ -91,17 +94,17 @@ export const registrarMascota = async (req, res) => {
 			]
 		);
 
-		const idMascota = result.insertId; // Obtener el ID de la nueva mascota
+		const idMascota = result.insertId;
 
 		// Si se suben imágenes, insertarlas en la tabla imagenes
 		if (Array.isArray(files) && files.length > 0) {
 			const imageQueries = files.map((file) =>
 				pool.query(
 					"INSERT INTO imagenes (fk_id_mascota, ruta_imagen) VALUES (?, ?)",
-					[idMascota, file.filename] // file.filename contiene solo el nombre del archivo
+					[idMascota, file.filename]
 				)
 			);
-			await Promise.all(imageQueries); // Ejecutar todas las consultas de inserción
+			await Promise.all(imageQueries);
 		}
 
 		// Verificar si la mascota fue registrada exitosamente
@@ -123,6 +126,7 @@ export const registrarMascota = async (req, res) => {
 		});
 	}
 };
+
 
 // Controlador para obtener conteo de mascotas por estado
 export const obtenerConteoPorEstado = async (req, res) => {

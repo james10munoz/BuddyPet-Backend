@@ -16,7 +16,7 @@ usuarioRoutes.delete("/eliminar/:id_usuario", validarToken, eliminarUsuario);
 usuarioRoutes.get('/verificar/:tipo/:valor', validarToken, verificarExistencia);
 usuarioRoutes.post('/solicitarCambioRol/:id_usuario', validarToken, solicitarCambioRol);
 usuarioRoutes.get('/listarNoti/:id_usuario', validarToken, listarNotificaciones);
-usuarioRoutes.put('/manejar/:id_notificacion', validarToken, manejarNotificacion);
+usuarioRoutes.put('/manejar/:id_notificacion',manejarNotificacion);
 usuarioRoutes.delete('/eliminarNotificacion/:id_notificacion', validarToken, eliminarNotificacion);
 
 export default usuarioRoutes;

@@ -364,7 +364,7 @@ export const actualizarPerfilUsuario = async (req, res) => {
 //solicitar cambio de rol
 export const solicitarCambioRol = async (req, res) => {
     try {
-        const { id_usuario, nuevoRol } = req.params;
+        const { id_usuario } = req.params;
         const [usuarioRows] = await pool.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id_usuario]);
 
         if (usuarioRows.length === 0) {
@@ -384,7 +384,7 @@ export const solicitarCambioRol = async (req, res) => {
             });
         }
 
-        // Obtener el ID del super-usuario
+        // Obtener el ID del superusuario
         const [superUsuarioRows] = await pool.query("SELECT id_usuario FROM usuarios WHERE rol = 'superusuario'");
         if (superUsuarioRows.length > 0) {
             const idSuperUsuario = superUsuarioRows[0].id_usuario;
@@ -392,7 +392,7 @@ export const solicitarCambioRol = async (req, res) => {
             // Enviar notificación al Super-Usuario con el ID del usuario solicitante
             const [result] = await pool.query(
                 "INSERT INTO notificaciones (id_usuario, mensaje, leido, estado) VALUES (?, ?, ?, ?)",
-                [idSuperUsuario, `El usuario ${id_usuario} ha solicitado cambiar su rol de ${rolActual} a ${nuevoRol}`, false, 'pendiente']
+                [idSuperUsuario, `El usuario ${id_usuario} ha solicitado cambiar su rol de usuario a administrador`, false, 'pendiente']
             );
 
             if (result.affectedRows > 0) {
@@ -409,7 +409,7 @@ export const solicitarCambioRol = async (req, res) => {
         } else {
             return res.status(404).json({
                 status: 404,
-                message: "Super-Usuario no encontrado",
+                message: "Superusuario no encontrado",
             });
         }
     } catch (error) {
@@ -419,6 +419,7 @@ export const solicitarCambioRol = async (req, res) => {
         });
     }
 };
+
 //listar notificaciones
 export const listarNotificaciones = async (req, res) => {
     try {
@@ -460,12 +461,12 @@ export const listarNotificaciones = async (req, res) => {
     }
 };
 //manejar notificaciones
-export const manejarNotificacion = async (req, res) => {
+export const manejarNotificacion = async (req, res) => { 
     try {
         const { id_notificacion } = req.params;
-        const { estado } = req.body; // Puede ser 'aceptada' o 'rechazada'
+        const { estado } = req.body; // 'aceptada' o 'rechazada'
 
-        // Validar el estado recibido
+        // Validar estado recibido
         if (estado !== 'aceptada' && estado !== 'rechazada') {
             return res.status(400).json({
                 status: 400,
@@ -475,28 +476,31 @@ export const manejarNotificacion = async (req, res) => {
 
         // Actualizar el estado de la notificación
         const [result] = await pool.query("UPDATE notificaciones SET estado = ? WHERE id_notificacion = ?", [estado, id_notificacion]);
-        
+
         if (result.affectedRows > 0) {
             // Obtener la notificación actualizada
             const [updatedNotification] = await pool.query("SELECT * FROM notificaciones WHERE id_notificacion = ?", [id_notificacion]);
             const notificacion = updatedNotification[0];
-            
+
             // Extraer el ID del usuario solicitante
             const mensajeParts = notificacion.mensaje.split(' ');
             const idSolicitante = mensajeParts.find(part => !isNaN(part));
-            
+
             // Obtener información del super-usuario
             const [superUsuarioRows] = await pool.query("SELECT nombre, telefono FROM usuarios WHERE rol = 'superusuario'");
             const superUsuario = superUsuarioRows[0];
 
-            // Crear una nueva notificación para el usuario solicitante dependiendo del estado
             let mensajeNotificacion;
+
+            // Realizar cambio de rol si el estado es "aceptada"
             if (estado === 'aceptada') {
-                mensajeNotificacion = `El Super Usuario ${superUsuario.nombre} ha aceptado tu solicitud de cambio de rol. Para continuar con el cambio de rol, debes comunicarte al WhatsApp ${superUsuario.telefono} de ${superUsuario.nombre} para confirmar el cambio.`;
-            } else if (estado === 'rechazada') {
+                await pool.query("UPDATE usuarios SET rol = 'administrador' WHERE id_usuario = ?", [idSolicitante]);
+                mensajeNotificacion = `El Super Usuario ${superUsuario.nombre} ha aceptado tu solicitud de cambio de rol. Ahora eres administrador. Para cualquier duda, contacta al WhatsApp ${superUsuario.telefono}.`;
+            } else {
                 mensajeNotificacion = `Tu solicitud de cambio de rol fue denegada por el Super Usuario ${superUsuario.nombre}.`;
             }
 
+            // Crear nueva notificación para el usuario solicitante
             await pool.query(
                 "INSERT INTO notificaciones (id_usuario, mensaje, leido, estado) VALUES (?, ?, ?, ?)",
                 [idSolicitante, mensajeNotificacion, false, 'pendiente']
@@ -520,6 +524,8 @@ export const manejarNotificacion = async (req, res) => {
         });
     }
 };
+
+
 
 //eliminar notificaciones
 export const eliminarNotificacion = async (req, res) => {
