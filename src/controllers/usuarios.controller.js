@@ -460,7 +460,7 @@ export const listarNotificaciones = async (req, res) => {
         });
     }
 };
-//manejar notificaciones
+//manejar notificaciones este es un nuevo cambio
 export const manejarNotificacion = async (req, res) => { 
     try {
         const { id_notificacion } = req.params;
