@@ -492,11 +492,12 @@ export const manejarNotificacion = async (req, res) => {
 
             let mensajeNotificacion;
 
-            // Realizar cambio de rol si el estado es "aceptada"
+            // Cambiar rol según el estado
             if (estado === 'aceptada') {
                 await pool.query("UPDATE usuarios SET rol = 'administrador' WHERE id_usuario = ?", [idSolicitante]);
                 mensajeNotificacion = `El Super Usuario ${superUsuario.nombre} ha aceptado tu solicitud de cambio de rol. Ahora eres administrador. Para cualquier duda, contacta al WhatsApp ${superUsuario.telefono}.`;
             } else {
+                await pool.query("UPDATE usuarios SET rol = 'usuario' WHERE id_usuario = ?", [idSolicitante]);
                 mensajeNotificacion = `Tu solicitud de cambio de rol fue denegada por el Super Usuario ${superUsuario.nombre}.`;
             }
 
@@ -524,7 +525,6 @@ export const manejarNotificacion = async (req, res) => {
         });
     }
 };
-
 
 
 //eliminar notificaciones

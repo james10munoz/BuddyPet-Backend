@@ -14,7 +14,7 @@ usuarioRoutes.put('/actualizar/:id_usuario', validarToken, upload.single('img'),
 usuarioRoutes.put('/actualizarPerfil/:id_usuario', validarToken, upload.single('img'), uploadImage,  actualizarPerfilUsuario);
 usuarioRoutes.delete("/eliminar/:id_usuario", validarToken, eliminarUsuario);
 usuarioRoutes.get('/verificar/:tipo/:valor', validarToken, verificarExistencia);
-usuarioRoutes.post('/solicitarCambioRol/:id_usuario', validarToken, solicitarCambioRol);
+usuarioRoutes.post('/solicitarCambioRol/:id_usuario', solicitarCambioRol);
 usuarioRoutes.get('/listarNoti/:id_usuario', validarToken, listarNotificaciones);
 usuarioRoutes.put('/manejar/:id_notificacion',manejarNotificacion);
 usuarioRoutes.delete('/eliminarNotificacion/:id_notificacion', validarToken, eliminarNotificacion);
