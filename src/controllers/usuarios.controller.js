@@ -41,6 +41,15 @@ export const registrarUsuario = async (req, res) => {
 		} = req.body;
 		const img = req.file ? req.file.filename : null; // Obtener el nombre del archivo de la solicitud
 
+		// Verificar si ya existe algún usuario en la base de datos
+		const [usuariosExistentes] = await pool.query("SELECT * FROM usuarios");
+
+		// Determinar el rol del nuevo usuario
+		let nuevoRol = rol || "usuario"; // Si no se proporciona rol, usar "usuario" como valor predeterminado
+		if (usuariosExistentes.length === 0) {
+			nuevoRol = "superusuario"; // Si no hay usuarios, asignar rol "superusuario" automáticamente
+		}
+
 		// Verificar si el correo ya está registrado
 		const [correoExistente] = await pool.query(
 			"SELECT * FROM usuarios WHERE correo = ?",
@@ -84,7 +93,7 @@ export const registrarUsuario = async (req, res) => {
 				documento_identidad,
 				hashedPassword, // Guardar la contraseña encriptada
 				img,
-				rol,
+				nuevoRol, // Asignar el rol determinado
 			]
 		);
 
@@ -107,6 +116,7 @@ export const registrarUsuario = async (req, res) => {
 		});
 	}
 };
+
 
 // Actualizar Usuario    La ruta es actualizar<perfil
 export const actualizarUsuario = async (req, res) => {

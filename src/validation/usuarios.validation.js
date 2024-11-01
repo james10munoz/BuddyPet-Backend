@@ -55,13 +55,13 @@ export const validateRegistroUsuario = [
 		.isEmpty()
 		.isLength({ min: 6 }),
 
-	check(
-		"rol",
-		"Rol es obligatorio y debe ser uno de los siguientes valores: administrador, usuario"
-	)
-		.not()
-		.isEmpty()
-		.isIn(["administrador", "usuario"]),
+	// check(
+	// 	"rol",
+	// 	"Rol es obligatorio y debe ser uno de los siguientes valores: administrador, usuario"
+	// )
+	// 	.not()
+	// 	.isEmpty()
+	// 	.isIn(["administrador", "usuario"]),
 ];
 
 // validación de actualizar usuario
