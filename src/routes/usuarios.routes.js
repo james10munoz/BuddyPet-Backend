@@ -13,7 +13,7 @@ usuarioRoutes.get('/conteo/rol', obtenerConteoPorEstado);
 usuarioRoutes.put('/actualizar/:id_usuario', validarToken, upload.single('img'), uploadImage,  actualizarUsuario);
 usuarioRoutes.put('/actualizarPerfil/:id_usuario', validarToken, upload.single('img'), uploadImage,  actualizarPerfilUsuario);
 usuarioRoutes.delete("/eliminar/:id_usuario", validarToken, eliminarUsuario);
-usuarioRoutes.get('/verificar/:tipo/:valor', validarToken, verificarExistencia);
+usuarioRoutes.get('/verificar/:tipo/:valor', verificarExistencia);
 usuarioRoutes.post('/solicitarCambioRol/:id_usuario', solicitarCambioRol);
 usuarioRoutes.get('/listarNoti/:id_usuario', validarToken, listarNotificaciones);
 usuarioRoutes.put('/manejar/:id_notificacion',manejarNotificacion);

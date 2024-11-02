@@ -27,6 +27,8 @@ export const listarUsuarios = async (req, res) => {
 // Registrar Usuario
 export const registrarUsuario = async (req, res) => {
 	try {
+		console.log("Datos recibidos en req.body:", req.body);
+		console.log("Archivo recibido en req.file:", req.file);
 		// Desestructurar datos del cuerpo de la solicitud
 		const {
 			nombre,
@@ -44,7 +46,7 @@ export const registrarUsuario = async (req, res) => {
 		// Verificar si ya existe algún usuario en la base de datos
 		const [usuariosExistentes] = await pool.query("SELECT * FROM usuarios");
 
-		// Determinar el rol del nuevo usuario
+		// Determinar el rol del nuevo usuario, asegurando que no sea NULL
 		let nuevoRol = rol || "usuario"; // Si no se proporciona rol, usar "usuario" como valor predeterminado
 		if (usuariosExistentes.length === 0) {
 			nuevoRol = "superusuario"; // Si no hay usuarios, asignar rol "superusuario" automáticamente
@@ -99,6 +101,12 @@ export const registrarUsuario = async (req, res) => {
 
 		// Verificar si la inserción fue exitosa
 		if (result.affectedRows > 0) {
+			// Log para verificar los datos en la respuesta con status 200
+			console.log("Datos enviados en respuesta:", {
+				status: 200,
+				message: "Usuario registrado exitosamente",
+			});
+			
 			res.status(200).json({
 				status: 200,
 				message: "Usuario registrado exitosamente",
@@ -110,6 +118,7 @@ export const registrarUsuario = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.error("Error en el servidor:", error);
 		res.status(500).json({
 			status: 500,
 			message: "Error en el servidor: " + error.message,
@@ -470,7 +479,7 @@ export const listarNotificaciones = async (req, res) => {
         });
     }
 };
-//manejar notificaciones este es un nuevo cambio
+//manejar notificaciones
 export const manejarNotificacion = async (req, res) => { 
     try {
         const { id_notificacion } = req.params;
