@@ -29,7 +29,7 @@ export const registrarUsuario = async (req, res) => {
 	try {
 		console.log("Datos recibidos en req.body:", req.body);
 		console.log("Archivo recibido en req.file:", req.file);
-		// Desestructurar datos del cuerpo de la solicitud
+///Hice nuevos cambios
 		const {
 			nombre,
 			apellido,
