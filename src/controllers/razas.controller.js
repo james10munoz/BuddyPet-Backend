@@ -1,8 +1,36 @@
 import { pool } from "../database/conexion.js";
 import { validationResult } from "express-validator";
 
-// Listar razas
 export const listarRazas = async (req, res) => {
+    try {
+        const [result] = await pool.query(`
+            SELECT 
+                r.id_raza, 
+                r.nombre_raza, 
+                r.fk_id_categoria, 
+                c.nombre_categoria
+            FROM razas r
+            INNER JOIN categorias c ON r.fk_id_categoria = c.id_categoria
+        `);
+
+        if (result.length > 0) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: "No hay razas registradas.",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error en el servidor: " + error.message,
+        });
+    }
+};
+
+// Listar razas Id
+export const listarRazasId = async (req, res) => {
     try {
         // Obtener id_categoria de los parámetros de la URL
         const { id_categoria } = req.params;

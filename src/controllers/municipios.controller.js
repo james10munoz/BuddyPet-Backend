@@ -1,8 +1,42 @@
 import { pool } from "../database/conexion.js";
 import { validationResult } from "express-validator";
 
-// Listar Municipios
 export const listarMunicipios = async (req, res) => {
+    try {
+        // Consulta para obtener todos los municipios sin filtrar por departamento
+        const [result] = await pool.query(`
+            SELECT 
+                m.id_municipio, 
+                m.nombre_municipio, 
+                m.codigo_dane, 
+                m.fk_id_departamento, 
+                d.nombre_departamento 
+            FROM 
+                municipios m
+            INNER JOIN 
+                departamentos d ON m.fk_id_departamento = d.id_departamento
+        `);
+
+        // Verificar si hay resultados
+        if (result.length > 0) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: "No hay municipios registrados para listar."
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error en el servidor: " + error.message,
+        });
+    }
+};
+
+
+// Listar Municipios Id
+export const listarMunicipiosId = async (req, res) => {
     try {
         const { id_departamento } = req.params; // Obtener id_departamento de los parámetros
 

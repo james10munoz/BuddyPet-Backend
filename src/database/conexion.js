@@ -11,9 +11,9 @@ export const pool = createPool({
 	// port: 3306,
 	// database: 'b9iytc2y2enbn9s1mwkk',
 
-	host: '192.168.0.50',
-	user: 'cesar',
-	password: 'cesar',
+	host: '192.168.0.203',
+	user: 'james',
+	password: 'Ubuntu123',
 	port: 3306,
 	database: 'buddypet',
 
@@ -24,5 +24,15 @@ export const pool = createPool({
 	// database: 'buddypet',
 });
 
-
+// Verificar conexión a la base de datos
+(async function checkConnection() {
+    try {
+        const connection = await pool.getConnection();
+        console.log("Conexión a la base de datos exitosa");
+        connection.release(); // Liberar la conexión después de la verificación
+    } catch (error) {
+        console.error("Error al conectar a la base de datos:", error.message);
+        console.error("Detalles del error:", error);
+    }
+})();
 
