@@ -11,11 +11,11 @@ export const pool = createPool({
 	// port: 3306,
 	// database: 'b9iytc2y2enbn9s1mwkk',
 
-	host: '192.168.0.203',
+	host: 'localhost',
 	user: 'james',
 	password: 'Ubuntu123',
-	port: 3306,
 	database: 'buddypet',
+	port: 3306,
 
 	// host: 'localhost',
 	// user: 'root',
