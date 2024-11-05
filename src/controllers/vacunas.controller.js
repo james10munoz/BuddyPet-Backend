@@ -50,7 +50,7 @@ export const registrarVacuna = async (req, res) => {
   try {
     const { fk_id_mascota, fecha_vacuna, enfermedad, estado } = req.body;
     const [result] = await pool.query(
-      "INSERT INTO Vacunas (fk_id_mascota, fecha_vacuna, enfermedad, estado) VALUES (?, ?, ?, ?)",
+      "INSERT INTO vacunas (fk_id_mascota, fecha_vacuna, enfermedad, estado) VALUES (?, ?, ?, ?)",
       [fk_id_mascota, fecha_vacuna, enfermedad, estado]
     );
     if (result.affectedRows > 0) {

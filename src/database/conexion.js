@@ -14,8 +14,9 @@ export const pool = createPool({
 	host: 'localhost',
 	user: 'james',
 	password: 'Ubuntu123',
-	database: 'buddypet',
 	port: 3306,
+	database: 'buddypet',
+	
 
 	// host: 'localhost',
 	// user: 'root',
