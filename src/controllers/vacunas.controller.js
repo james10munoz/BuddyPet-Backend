@@ -65,9 +65,20 @@ export const registrarVacuna = async (req, res) => {
       });
     }
   } catch (error) {
+    let errorMessage = "Error en el servidor";
+
+    // Verificación de errores específicos de MySQL
+    if (error.code === "ER_NO_REFERENCED_ROW_2") {
+      errorMessage = "La mascota especificada no existe";
+    } else if (error.code === "ER_DATA_TOO_LONG") {
+      errorMessage = "Uno de los campos excede el límite de caracteres permitido";
+    } else if (error.code === "ER_TRUNCATED_WRONG_VALUE") {
+      errorMessage = "Formato de datos incorrecto para uno de los campos";
+    }
+
     res.status(500).json({
       status: 500,
-      message: "Error en el servidor " + error.message,
+      message: `${errorMessage}: ${error.message}`,
     });
   }
 };
