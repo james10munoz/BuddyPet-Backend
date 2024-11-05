@@ -300,7 +300,7 @@ export const buscarMascota = async (req, res) => {
 			SELECT 
 				m.id_mascota,
 				m.nombre_mascota,
-				m.fecha_nacimiento,
+				DATE_FORMAT(m.fecha_nacimiento, '%Y-%m-%d') AS fecha_nacimiento,
 				m.estado,
 				m.descripcion,
 				m.esterilizado,
