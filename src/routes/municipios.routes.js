@@ -7,8 +7,8 @@ const MunicipioRoutes = Router();
 
 MunicipioRoutes.get("/listar",  listarMunicipios);
 MunicipioRoutes.get("/listar/:id_departamento",  listarMunicipiosId);
-MunicipioRoutes.post("/registrar", validarToken, validateCrearMunicipio, registrarMunicipio);
-MunicipioRoutes.put("/actualizar/:id_municipio", validateActualizarMunicipio, validarToken, actualizarMunicipio);
+MunicipioRoutes.post("/registrar", validateCrearMunicipio, registrarMunicipio);
+MunicipioRoutes.put("/actualizar/:id_municipio", validateActualizarMunicipio,  actualizarMunicipio);
 MunicipioRoutes.delete("/eliminar/:id_municipio", validarToken, eliminarMunicipio);
 MunicipioRoutes.get("/buscar/:id_municipio", validarToken, buscarMunicipio);
 
