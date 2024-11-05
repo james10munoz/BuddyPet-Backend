@@ -63,10 +63,10 @@ export const registrarMascota = async (req, res) => {
 			esterilizado,
 			tamano,
 			peso,
-			fk_id_categoria,
-			fk_id_raza,
-			fk_id_departamento,
-			fk_id_municipio,
+			id_categoria,
+			id_raza,
+			id_departamento,
+			id_municipio,
 			sexo,
 		} = req.body;
 
@@ -86,10 +86,10 @@ export const registrarMascota = async (req, res) => {
 				esterilizado,
 				tamano,
 				parseFloat(peso),
-				fk_id_categoria,
-				fk_id_raza,
-				fk_id_departamento,
-				fk_id_municipio,
+				id_categoria,
+				id_raza,
+				id_departamento,
+				id_municipio,
 				sexo,
 			]
 		);
@@ -156,6 +156,7 @@ export const obtenerConteoPorEstado = async (req, res) => {
 // Actualizar Mascota por ID
 export const actualizarMascota = async (req, res) => {
     try {
+        console.log(req.body);
         const { id_mascota } = req.params;
         const {
             nombre_mascota,
@@ -165,10 +166,10 @@ export const actualizarMascota = async (req, res) => {
             esterilizado,
             tamano,
             peso,
-            fk_id_categoria,
-            fk_id_raza,
-            fk_id_departamento,
-            fk_id_municipio,
+            id_categoria,
+            id_raza,
+            id_departamento,
+            id_municipio,
             sexo,
         } = req.body;
 
@@ -189,14 +190,17 @@ export const actualizarMascota = async (req, res) => {
                 esterilizado,
                 tamano,
                 peso,
-                fk_id_categoria,
-                fk_id_raza,
-                fk_id_departamento,
-                fk_id_municipio,
+                id_categoria,
+                id_raza,
+                id_departamento,
+                id_municipio,
                 sexo,
                 id_mascota,
             ]
         );
+        const [updatedMascota] = await pool.query("SELECT * FROM mascotas WHERE id_mascota=?", [id_mascota]);
+console.log("Datos de la mascota actualizados:", updatedMascota);
+
 
         if (result.affectedRows > 0) {
             // Obtener las fotos actuales de la base de datos
@@ -241,10 +245,10 @@ export const actualizarMascota = async (req, res) => {
                     esterilizado,
                     tamano,
                     peso,
-                    fk_id_categoria,
-                    fk_id_raza,
-                    fk_id_departamento,
-                    fk_id_municipio,
+                    id_categoria,
+                    id_raza,
+                    id_departamento,
+                    id_municipio,
                     sexo,
                 },
             });

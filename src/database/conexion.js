@@ -11,18 +11,18 @@ export const pool = createPool({
 	// port: 3306,
 	// database: 'b9iytc2y2enbn9s1mwkk',
 
-	host: 'localhost',
-	user: 'james',
-	password: 'Ubuntu123',
-	port: 3306,
-	database: 'buddypet',
-	
-
 	// host: 'localhost',
-	// user: 'root',
-	// password: '',
+	// user: 'james',
+	// password: 'Ubuntu123',
 	// port: 3306,
 	// database: 'buddypet',
+	
+
+	host: 'localhost',
+	user: 'root',
+	password: '',
+	port: 3306,
+	database: 'buddypet',
 });
 
 // Verificar conexión a la base de datos
