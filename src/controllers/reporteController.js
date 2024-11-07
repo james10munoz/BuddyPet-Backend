@@ -123,7 +123,7 @@ const generateAdoptedPetsPDF = (data) => {
                             y: doc.y
                         });
 
-                        doc.moveDown(3); // Espacio debajo de la imagen
+                        doc.moveDown(8); // Espacio debajo de la imagen
                     } else {
                         console.error('Archivo de imagen no encontrado:', mascota.imagen);
                     }
