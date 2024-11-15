@@ -185,9 +185,9 @@ const generatePDF = (data) => {
             // Función para dibujar el margen
             const drawMargin = () => {
                 doc
-                    .strokeColor('#dc7633')
+                    // .strokeColor('#dc7633')
                     .lineWidth(1)
-                    .rect(margin, margin, doc.page.width - 2 * margin, doc.page.height - 2 * margin)
+                    // .rect(margin, margin, doc.page.width - 2 * margin, doc.page.height - 2 * margin)
                     .stroke();
             };
 
@@ -245,8 +245,10 @@ data.forEach((mascota, index) => {
   const edadEnMeses = calculateAgeInMonths(mascota.fecha_nacimiento);
   
   // Texto general de la mascota antes de la imagen
-  doc.fontSize(12)
-     .fillColor('#333333')
+  doc
+  .font('Helvetica')
+  .fontSize(12)
+  .fillColor('black')
      .text(`${index + 1}. Nombre: ${mascota.nombre_mascota}`);
   doc.text(`   Fecha de Nacimiento: ${moment(mascota.fecha_nacimiento).format("YYYY-MM-DD")}`);
   doc.text(`   Edad: ${edadEnMeses} meses`);
@@ -292,11 +294,6 @@ data.forEach((mascota, index) => {
   // Añadir espacio antes de la siguiente mascota en el listado
   doc.moveDown(3);
 });
-
-
-
-            
-
 // Define la función para dibujar el pie de página
 const drawFooter = () => {
     const fixedXPosition = 474;
@@ -443,12 +440,14 @@ console.log(`Mascota ID: ${mascota.id_mascota}, Imagen: ${mascota.imagen}, Todas
 
     // Generar el PDF
     const pdfBuffer = await generatePDF(mascotas);
+    
+    
 
     // Configurar las cabeceras para la descarga del PDF
     res.setHeader("Content-Disposition", `attachment; filename=Reporte_Mascotas_${Date.now()}.pdf`);
     res.setHeader("Content-Type", "application/pdf");
 
-    res.send(pdfBuffer);
+    res.send(pdfBuffer);console.log('Con esto se genera el reporte ',pdfBuffer.data);
   } catch (error) {
     console.error("Error al generar el reporte:", error);
     res.status(500).json({
