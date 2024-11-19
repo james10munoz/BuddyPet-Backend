@@ -104,11 +104,11 @@ export const listarMascotasAceptadas = async (req, res) => {
 // Listar Mascotas en Proceso de Adopción por Usuario
 export const listarMascotasEnProcesoAdopcion = async (req, res) => {
   try {
-    const { fk_id_usuario_adoptante } = req.params; // Obtén el ID del usuario adoptante desde los parámetros de la solicitud
-    
+    const { fk_id_usuario_adoptante } = req.params;
+
     const query = `
       SELECT 
-       a.id_adopcion, 
+        a.id_adopcion, 
         m.id_mascota, 
         m.nombre_mascota, 
         m.sexo, 
@@ -116,7 +116,7 @@ export const listarMascotasEnProcesoAdopcion = async (req, res) => {
         d.nombre_departamento AS departamento,
         mu.nombre_municipio AS municipio,
         GROUP_CONCAT(i.ruta_imagen) AS imagenes,
-        a.fecha_adopcion, 
+        MAX(a.fecha_adopcion) AS fecha_adopcion, 
         a.estado AS estado_adopcion
       FROM adopciones a 
       JOIN mascotas m ON a.fk_id_mascota = m.id_mascota 
@@ -124,18 +124,18 @@ export const listarMascotasEnProcesoAdopcion = async (req, res) => {
       JOIN razas r ON m.fk_id_raza = r.id_raza
       JOIN departamentos d ON m.fk_id_departamento = d.id_departamento
       JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
-      WHERE a.fk_id_usuario_adoptante = ? AND a.estado = 'proceso de adopcion'
-      GROUP BY m.id_mascota;
+      WHERE a.fk_id_usuario_adoptante = ?
+      GROUP BY a.id_adopcion, m.id_mascota, m.nombre_mascota, m.sexo, r.nombre_raza, d.nombre_departamento, mu.nombre_municipio, a.estado;
     `;
 
-    const [result] = await pool.query(query, [fk_id_usuario_adoptante]); // Ejecuta la consulta con el ID del usuario
+    const [result] = await pool.query(query, [fk_id_usuario_adoptante]);
 
     if (result.length > 0) {
       res.status(200).json(result);
     } else {
       res.status(404).json({
         status: 404,
-        message: "No se encontraron mascotas en proceso de adopción para este usuario",
+        message: "No se encontraron solicitudes de adopción para este usuario",
       });
     }
   } catch (error) {
@@ -145,6 +145,7 @@ export const listarMascotasEnProcesoAdopcion = async (req, res) => {
     });
   }
 };
+
 
 
 // Controlador para iniciar el proceso de adopción
