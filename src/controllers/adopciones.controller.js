@@ -56,9 +56,9 @@ export const listarAdopciones = async (req, res) => {
 // Listar mascotas aceptadas por parte del usuario
 export const listarMascotasAceptadas = async (req, res) => {
   try {
-    const { id_usuario } = req.params; // Obtener el ID del usuario de los parámetros de la solicitud
+    const { id_usuario } = req.params;
 
-    const [results] = await pool.query(`
+    const query = `
       SELECT 
         m.id_mascota, 
         m.nombre_mascota, 
@@ -81,14 +81,16 @@ export const listarMascotasAceptadas = async (req, res) => {
       JOIN departamentos d ON m.fk_id_departamento = d.id_departamento
       JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
       WHERE a.fk_id_usuario_adoptante = ? AND a.estado = 'aceptada'
-      GROUP BY m.id_mascota;
-    `, [id_usuario]);
+      GROUP BY m.id_mascota, a.fecha_adopcion;
+    `;
+
+    const [results] = await pool.query(query, [id_usuario]);
 
     if (results.length > 0) {
       res.status(200).json(results);
     } else {
-      res.status(403).json({
-        status: 403,
+      res.status(404).json({
+        status: 404,
         message: "No se encontraron mascotas aceptadas para este usuario",
       });
     }
@@ -99,6 +101,7 @@ export const listarMascotasAceptadas = async (req, res) => {
     });
   }
 };
+
 
 
 // Listar Mascotas en Proceso de Adopción por Usuario
