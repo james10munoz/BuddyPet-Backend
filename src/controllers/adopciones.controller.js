@@ -127,7 +127,7 @@ export const listarMascotasEnProcesoAdopcion = async (req, res) => {
       JOIN razas r ON m.fk_id_raza = r.id_raza
       JOIN departamentos d ON m.fk_id_departamento = d.id_departamento
       JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
-      WHERE a.fk_id_usuario_adoptante = ?
+      WHERE a.fk_id_usuario_adoptante = ? AND a.estado = 'proceso de adopcion'
       GROUP BY a.id_adopcion, m.id_mascota, m.nombre_mascota, m.sexo, r.nombre_raza, d.nombre_departamento, mu.nombre_municipio, a.estado;
     `;
 
@@ -138,7 +138,7 @@ export const listarMascotasEnProcesoAdopcion = async (req, res) => {
     } else {
       res.status(404).json({
         status: 404,
-        message: "No se encontraron solicitudes de adopción para este usuario",
+        message: "No se encontraron mascotas en proceso de adopción para este usuario",
       });
     }
   } catch (error) {
