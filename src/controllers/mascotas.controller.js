@@ -221,7 +221,7 @@ console.log("Datos de la mascota actualizados:", updatedMascota);
                 });
 
                 // Eliminar las fotos actuales de la base de datos
-                // await pool.query("DELETE FROM imagenes WHERE fk_id_mascota=?", [id_mascota]);
+                await pool.query("DELETE FROM imagenes WHERE fk_id_mascota=?", [id_mascota]);
 
                 // Insertar las nuevas fotos en la base de datos
                 const imageQueries = nuevasFotos.map((file) =>
